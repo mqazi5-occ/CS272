@@ -3,9 +3,7 @@
  */
 package occ.cs272.h03;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -46,24 +44,25 @@ public class CheapScraper2CSV {
 					out.println(s4);
 				}
 			}
+			
+			in.close();
+			out.close();
 
 		} catch (Exception e)
 		{
-			if (e instanceof IOException)
+			if (e instanceof FileNotFoundException)
 			{
-				System.err.println("An IOException error has occurred");
+				System.err.println("Input file not found");
 			}
 			else if (e instanceof NumberFormatException)
 			{
-				System.err.println("Please use an integer");
+				System.err.println("Please use only an integer for the second parameter");
 			}
 			else
 			{
 				System.err.println("An error has occured");
 			}
 		}
-		in.close();
-		out.close(); 
 	}
 
 }
