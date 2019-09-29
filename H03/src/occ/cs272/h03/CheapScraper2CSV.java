@@ -3,6 +3,11 @@
  */
 package occ.cs272.h03;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
+
 /**
  * @author Mohammad Usman Qazi
  * @version Sep 25, 2019
@@ -10,14 +15,55 @@ package occ.cs272.h03;
 public class CheapScraper2CSV {
 
 	public static void main(String[] args) {
+		
 		System.out.println("Command Line Args: ");
-		for (int i = 0; i < args.length; ++i)
+		for (int i = 0; i < args.length; i++)
 		{
 			System.out.println(args[i]);
 		}
-		int columns = Integer.parseInt(args[0]);
-		String inputFileName = args[1];
-		String outputFileName = args[2];
+				
+		Scanner in = null;
+		PrintWriter out = null;
+		
+		try {
+			int columns = Integer.parseInt(args[1]);
+			String inputFileName = args[2];
+			String outputFileName = args[3];
+			
+			in = new Scanner(new File(inputFileName));
+			out = new PrintWriter(outputFileName);
+			if (columns == 4)
+			{
+				while(in.hasNextLine())
+				{
+					String s1 = "\"" + in.nextLine() + "\""; 
+					String s2 = ",\"" + in.nextLine() + "\""; 
+					String s3 = ",\"" + in.nextLine() + "\""; 
+					String s4 = ",\"" + in.nextLine() + "\""; 
+					out.append(s1);
+					out.append(s2);
+					out.append(s3);
+					out.println(s4);
+				}
+			}
+
+		} catch (Exception e)
+		{
+			if (e instanceof IOException)
+			{
+				System.err.println("An IOException error has occurred");
+			}
+			else if (e instanceof NumberFormatException)
+			{
+				System.err.println("Please use an integer");
+			}
+			else
+			{
+				System.err.println("An error has occured");
+			}
+		}
+		in.close();
+		out.close(); 
 	}
 
 }
