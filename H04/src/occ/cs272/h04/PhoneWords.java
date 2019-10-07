@@ -1,7 +1,7 @@
 package occ.cs272.h04;
 
 public class PhoneWords 
-{	
+{
 	public static void phoneWords(String num) 
 	{
 		if (num != null)
