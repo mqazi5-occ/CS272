@@ -70,4 +70,9 @@ public class Cart
 	{
 		return cart[i];
 	}
+	
+	public boolean isEmpty()
+	{
+		return (numOfItems == 0);
+	}
 }

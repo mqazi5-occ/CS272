@@ -28,7 +28,7 @@ public class POSFrame extends JFrame
 	private static DecimalFormat df = new DecimalFormat("0.00");
 
 	private static final double TAX = 0.075;
-	private static final int FRAME_WIDTH = 650;
+	private static final int FRAME_WIDTH = 700;
 	private static final int FRAME_HEIGHT = 500;
 	
 	private static JFrame frame;
@@ -86,7 +86,7 @@ public class POSFrame extends JFrame
 		scan = new JButton("Scan Item");
 		priceCheck = new JButton("Price Check");
 		voidItem = new JButton("Void Item");
-		voidTrans = new JButton("Void Trans");
+		voidTrans = new JButton("Void Transaction");
 		checkout = new JButton("Checkout");
 		
 		scan.addActionListener(new Scan());
@@ -95,7 +95,7 @@ public class POSFrame extends JFrame
 		voidTrans.addActionListener(new VoidTrans());
 		checkout.addActionListener(new Checkout());
 
-		Dimension buttonSize = new Dimension(120, 125);
+		Dimension buttonSize = new Dimension(130, 125);
 		scan.setPreferredSize(buttonSize);
 		priceCheck.setPreferredSize(buttonSize);
 		voidItem.setPreferredSize(buttonSize);
@@ -223,6 +223,7 @@ public class POSFrame extends JFrame
 			name.setText("Name" + "\n--------------------------------------------------------------------");
 			price.setText("Price" + "\n-------------");
 			JOptionPane.showMessageDialog(getFrame(), "The transaction has successfully been voided");
+			System.exit(0);
 		}
 	}
 	
@@ -231,11 +232,19 @@ public class POSFrame extends JFrame
 		public void actionPerformed(ActionEvent event)
 		{
 			cart = POSDemo.getCart();
-			double total = cart.getTotal() + (cart.getTotal() * TAX);
-			JOptionPane.showMessageDialog(getFrame(), "SUBTOTAL: $" + df.format(cart.getTotal()) +
-					"\nTAX:              $" + df.format((cart.getTotal() * TAX)) 
-					+ "\nTOTAL:         $" + df.format(total));
-			POSDemo.checkout();
+			
+			if (cart.isEmpty())
+			{
+				JOptionPane.showMessageDialog(getFrame(), "The cart is empty! Cannot checkout.");
+			}
+			else
+			{
+				double total = cart.getTotal() + (cart.getTotal() * TAX);
+				JOptionPane.showMessageDialog(getFrame(), "SUBTOTAL: $" + df.format(cart.getTotal()) +
+						"\nTAX:              $" + df.format((cart.getTotal() * TAX)) 
+						+ "\nTOTAL:         $" + df.format(total));
+				POSDemo.checkout();
+			}
 		}
 	}
 }
