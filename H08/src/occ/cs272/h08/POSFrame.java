@@ -7,6 +7,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
@@ -21,7 +22,7 @@ import javax.swing.JTextArea;
 /**
  * @author Mohammad Usman Qazi
  * @author Richard Pham
- * @version Nov 26, 2019
+ * @version Dec 3, 2019
  */
 public class POSFrame extends JFrame
 {
@@ -34,8 +35,10 @@ public class POSFrame extends JFrame
 	private static JFrame frame;
 	private static JPanel cartPane;
 	private static JPanel actionPane;
+	private static JPanel cartPanel; 
 	private JButton scan, priceCheck, voidItem, voidTrans, checkout;
 	private JTextArea UPC, name, price;
+	private JTextArea cartel; 
 	
 	private static Cart cart;
 	private static Product product;
@@ -70,14 +73,25 @@ public class POSFrame extends JFrame
 	{
 		cartPane = new JPanel();
 		actionPane = new JPanel();
+		cartPanel = new JPanel(); 
+		
+		cartel = new JTextArea(); 
+		cartel.setText("CART: ");
+		cartel.setEditable(false);
+		cartel.setFont(cartel.getFont().deriveFont(Font.BOLD, cartel.getFont().getSize()));
+		cartel.setFont(cartel.getFont().deriveFont(24f));
 		
 		UPC = new JTextArea();
 		name = new JTextArea();
 		price = new JTextArea();
 		
-		UPC.setText("UPC" + "\n----------");
-		name.setText("Name" + "\n--------------------------------------------------------------------");
-		price.setText("Price" + "\n-------------");
+		UPC.setText("  UPC" + "\n----------");
+		name.setText("	                Name" + "\n---------------------------------------------------------------------------");
+		price.setText("   Price" + "\n-------------");
+		
+		UPC.setFont(UPC.getFont().deriveFont(Font.BOLD, UPC.getFont().getSize()));
+		name.setFont(name.getFont().deriveFont(Font.BOLD, name.getFont().getSize()));
+		price.setFont(price.getFont().deriveFont(Font.BOLD, price.getFont().getSize()));
 		
 		UPC.setEditable(false);
 		name.setEditable(false);
@@ -115,6 +129,8 @@ public class POSFrame extends JFrame
 		voidTrans.setCursor(hover);
 		checkout.setCursor(hover);
 		
+		cartPanel.add(cartel); 
+		
 		cartPane.add(UPC);
 		cartPane.add(name);
 		cartPane.add(price);
@@ -124,8 +140,17 @@ public class POSFrame extends JFrame
 		actionPane.add(voidItem);
 		actionPane.add(voidTrans);
 		actionPane.add(checkout);
-
-		this.add(cartPane, BorderLayout.NORTH);
+		
+		
+		UPC.setBackground(Color.LIGHT_GRAY);
+		name.setBackground(Color.LIGHT_GRAY);
+		price.setBackground(Color.LIGHT_GRAY);
+		cartel.setBackground(Color.LIGHT_GRAY);
+		cartPane.setBackground(Color.LIGHT_GRAY);
+		cartPanel.setBackground(Color.LIGHT_GRAY);
+		actionPane.setBackground(Color.gray);
+		this.add(cartPanel, BorderLayout.NORTH); 
+		this.add(cartPane);
 		this.add(actionPane, BorderLayout.SOUTH);
 	}
 	
@@ -166,9 +191,18 @@ public class POSFrame extends JFrame
 			String upc = JOptionPane.showInputDialog(getFrame(), "Enter UPC:");
 			
 			try {
-				JOptionPane.showMessageDialog(getFrame(), "Item with UPC " + upc + " has a price of $" + POSDemo.priceCheck(upc));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+				product = POSDemo.search(upc);
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
+			
+			if (product != null)
+			{
+				try {
+					JOptionPane.showMessageDialog(getFrame(), "Item with UPC " + upc + " has a price of $" + POSDemo.priceCheck(upc));
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -177,38 +211,54 @@ public class POSFrame extends JFrame
 	{
 		public void actionPerformed(ActionEvent event)
 		{
-			String upc = JOptionPane.showInputDialog(getFrame(), "Enter UPC:");
-			
-			try {
-				POSDemo.voidItem(upc);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			
-			UPC.setText("UPC" + "\n----------");
-			name.setText("Name" + "\n--------------------------------------------------------------------");
-			price.setText("Price" + "\n-------------");
-			
-			index = 0;
 			cart = POSDemo.getCart();
-   	 		product = cart.getProduct(index);
-            
-       	 	while (product != null)
-       	 	{
-           	 	index++;
-           	 	
-	       	 	UPC.setText(UPC.getText() + "\n" + product.getUPC());
-	       	 	name.setText(name.getText() + "\n" + product.getName());
-	       	 	price.setText(price.getText() + "\n" + "$" + product.getPrice());
-	            
-	    		cartPane.add(UPC);
-	    		cartPane.add(name);
-	    		cartPane.add(price);
+			
+			if (cart.isEmpty())
+			{
+				JOptionPane.showMessageDialog(getFrame(), "The cart is empty! Cannot void.");
+			}
+			else
+			{
+				String upc = JOptionPane.showInputDialog(getFrame(), "Enter UPC:");
 
-       	 		product = cart.getProduct(index);
-       	 	}
+				try {
+					product = POSDemo.search(upc);
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
+				
+				if (product != null)
+				{
+					try {
+						POSDemo.voidItem(upc);
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					}
+					
+					UPC.setText("  UPC" + "\n----------");
+					name.setText("	                Name" + "\n---------------------------------------------------------------------------");
+					price.setText("   Price" + "\n-------------");
+					
+					index = 0;
+		   	 		product = cart.getProduct(index);
+		            
+		       	 	while (product != null)
+		       	 	{
+		           	 	index++;
+		           	 	
+			       	 	UPC.setText(UPC.getText() + "\n" + product.getUPC());
+			       	 	name.setText(name.getText() + "\n" + product.getName());
+			       	 	price.setText(price.getText() + "\n" + "$" + product.getPrice());
+			            
+			    		cartPane.add(UPC);
+			    		cartPane.add(name);
+			    		cartPane.add(price);
 
-			JOptionPane.showMessageDialog(getFrame(), "The item has successfully been voided");
+		       	 		product = cart.getProduct(index);
+		       	 	}
+					JOptionPane.showMessageDialog(getFrame(), "The item has successfully been voided");
+				}
+			}
 		}
 	}
 	
@@ -216,14 +266,21 @@ public class POSFrame extends JFrame
 	{
 		public void actionPerformed(ActionEvent event)
 		{
-			POSDemo.voidTrans();
+			cart = POSDemo.getCart();
 			
-			index = 0;
-			UPC.setText("UPC" + "\n----------");
-			name.setText("Name" + "\n--------------------------------------------------------------------");
-			price.setText("Price" + "\n-------------");
-			JOptionPane.showMessageDialog(getFrame(), "The transaction has successfully been voided");
-			System.exit(0);
+			if (cart.isEmpty())
+			{
+				JOptionPane.showMessageDialog(getFrame(), "The cart is empty! Cannot void.");
+			}
+			else
+			{
+				POSDemo.voidTrans();
+				index = 0;
+				UPC.setText("  UPC" + "\n----------");
+				name.setText("	                Name" + "\n---------------------------------------------------------------------------");
+				price.setText("   Price" + "\n-------------");
+				JOptionPane.showMessageDialog(getFrame(), "The transaction has successfully been voided");
+			}
 		}
 	}
 	

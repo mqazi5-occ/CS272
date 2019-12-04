@@ -89,7 +89,12 @@ public class POSDemo
 	
 	public static void voidItem(String UPC) throws FileNotFoundException
 	{
-		cart.removeItem(UPC);
+		Product p = search(UPC);
+		
+		if (p != null)
+		{
+			cart.removeItem(p.getUPC());
+		}
 		cart.print();
 	}
 	
